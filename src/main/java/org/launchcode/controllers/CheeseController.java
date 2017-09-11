@@ -8,12 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by LaunchCode
@@ -47,10 +46,12 @@ public class CheeseController {
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public String processAddCheeseForm(@ModelAttribute  @Valid Cheese newCheese,
-                                       Errors errors, @RequestParam int categoryId, Model model) {
+                                       Errors errors, @RequestParam int categoryId,
+                                       Model model) {
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Cheese");
+            model.addAttribute("categories", categoryDao.findAll());
             return "cheese/add";
         }
 
@@ -77,4 +78,12 @@ public class CheeseController {
         return "redirect:";
     }
 
+    @RequestMapping(value = "category/{id}")
+    public String category(Model model, @PathVariable int id) {
+
+
+        model.addAttribute("cheeses", categoryDao.findOne(id).getCheeses());
+        model.addAttribute("title", "Cheese by Category");
+        return "cheese/index";
+    }
 }
